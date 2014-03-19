@@ -1,10 +1,11 @@
 <?php
 $html =  file_get_contents('http://digitec.ch/Tagesaktionen.aspx');
-preg_match( '/(<div.*?dday big.*?)<div id="a/i', $html, $matches);
+preg_match( '/<div.*?dday big.*?(<div class="image".*?)<div id="a/is', $html, $matches);
 $link = "http://digitec.ch";
 $title = date('d-m-Y');
-preg_match( '/<div.*?class="date.*?(\d+)<\//i', $html, $date_match);
-$description = str_replace('ProdukteDetails2', 'http://digitec.ch/ProdukteDetails2', $matches[1]);
+preg_match( '/<div.*?class="date.*?(\d+)<\//is', $html, $date_match);
+$description = $matches[1];
+//$description = str_replace('ProdukteDetails2', 'http://digitec.ch/ProdukteDetails2', $matches[1]);
 $description = str_replace('class="info"', 'style="position: absolute;left: 265px;top: 0;padding: 60px 30px 60px 0;height: 198px;font-family: Arial, sans-serif;color:  #00559D;letter-spacing: 0.049em;font-weight: normal;font-size: 11px;line-height: 12px;"', $description);
 $description = str_replace('class="name"', 'style="color: black;font-size: 16px;line-height: 20px;"', $description);
 $description = str_replace('class="brand"', 'style="color: black;font-size: 16px;line-height: 20px;font-weight: bold;"', $description);
@@ -40,9 +41,3 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>';
 <?php endif;?>
 </channel>
 </rss>
-
-
-
-
-
-
