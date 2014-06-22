@@ -1,8 +1,8 @@
 <?php
-$html =  file_get_contents('https://shop.digitec.ch/fr/LiveShopping');
+$html =  file_get_contents('https://www.galaxus.ch/fr/LiveShopping');
 preg_match( '/<article class="product dday dday-big.*?>(.*?)<form/is', $html, $matches);
 
-$link = "https://shop.digitec.ch";
+$link = "https://www.galaxus.ch";
 $title = date('d-m-Y');
 $description = $matches[1];
 
@@ -19,15 +19,14 @@ preg_match( '/<div.*?class="date.*?(\d+)<\//is', $description, $date_match);
 $date =  date('D, d M Y H:i:s O', mktime(6, 0, 0));
 $id =  $title;
 
-
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 ?>
 
 <rss version="2.0">
 <channel>
-        <title>DIGITEC.CH DEALS</title>
+        <title>Galaxus DEALS</title>
         <description></description>
-        <link>http://digitec.ch</link>
+        <link>http://galaxus.ch</link>
         <lastBuildDate><?php echo $date;?></lastBuildDate>
         <pubDate><?php echo $date;?></pubDate>
 <?php if ($date_match[1] == date('d')): ?>
