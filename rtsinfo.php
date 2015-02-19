@@ -11,10 +11,15 @@ function main(){
 		//extract link url
 		preg_match('/<link>(.*)<\/link>/ms', $item, $link);
 		//could extract category from link
-		$description = get_content_from_link($link[1]);
+		//$description = get_content_from_link($link[1]);
 		//replace description
-		echo preg_replace('/<!\[CDATA\[.*?\]\]>/ms', "<![CDATA[ " . $description . " ]]>", $item);
-		
+		//echo preg_replace('/<!\[CDATA\[.*?\]\]>/ms', "<![CDATA[ " . $description . " ]]>", $item);
+    $item = preg_replace('/<description>.*?<\/description>/ms', "", $item);
+    $item = preg_replace('/<fullText><!\[CDATA\[(.*?)\]\]><\/fullText>(.*?)<image size="big">(.*?)<\/image>/ms', '<description><img src="$3">$1</description>$2<image size="big">$3</image>', $item);
+    $item = preg_replace('/href="\//m', 'href="http://www.rts.ch/', $item);
+    $item = preg_replace('/src="\//m', 'src="http://www.rts.ch/', $item);  
+    
+		echo $item;
 	}
 	echo $match[2][0]; //footer
 }
