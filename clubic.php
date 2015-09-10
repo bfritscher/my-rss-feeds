@@ -1,8 +1,10 @@
 <?php
 //error_reporting(E_ALL);
 //ini_set('display_errors', 1);
+require('core.php');
+
 function main(){
-	$feed = file_get_contents('http://www.clubic.com/articles.rss');
+	$feed = get_web_page_content('http://www.clubic.com/articles.rss');
 	//extract header and footer
 	preg_match_all('/(.*?)<item>.*<\/item>(.*)$/ms', $feed, $match);
 	//extract items
@@ -30,7 +32,7 @@ function get_content_from_link($link){
 function get_content_from_clubic($link){
 	$content = "";
 	//TODO: caching
-	$html = file_get_contents($link);
+	$html = get_web_page_content($link);
 	preg_match('/\<div class="editorial"(.*?)\<!--/ms', $html, $article);
 	$content .= $article[1];
 	return "<div " . utf8_encode($content);
@@ -39,7 +41,7 @@ function get_content_from_clubic($link){
 function get_content_from_article($link){
 	$content = "";
 	//TODO: caching
-	$html = file_get_contents($link);
+	$html = get_web_page_content($link);
 	preg_match('/<article>(.*?)<\/article>/ms', $html, $article);
 	$content .= $article[1];
 	return "<div>" . $content ."</div>";

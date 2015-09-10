@@ -1,7 +1,8 @@
 <?php
+require('core.php');
 
 function main(){
-	$feed = file_get_contents('http://www.rts.ch/info/toute-info/?format=rss/news');
+	$feed = get_web_page_content('http://www.rts.ch/info/toute-info/?format=rss/news');
 	//extract header and footer
 	preg_match_all('/(.*?)<item>.*<\/item>(.*)$/ms', $feed, $match);
 	//extract items
@@ -27,7 +28,7 @@ function main(){
 function get_content_from_link($link){
 	$content = "";
 	//TODO: caching
-	$html = file_get_contents($link);
+	$html = get_web_page_content($link);
 	preg_match('/media small">.*?(<img.*?\/>)/ms', $html, $img);
 	$content .=  "<p>" . $img[1] ."</p>";
 	preg_match('/intro">(.*?)<\/div/ms', $html, $intro);

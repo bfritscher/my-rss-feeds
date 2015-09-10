@@ -1,24 +1,25 @@
 <?php
-$html =  file_get_contents('https://shop.digitec.ch/fr/LiveShopping');
-preg_match( '/<article class="product dday dday-big.*?>(.*?)<form/is', $html, $matches);
+require('core.php');
 
-$link = "https://shop.digitec.ch";
+$html =  get_web_page('https://www.digitec.ch/fr/LiveShopping');
+preg_match( '/<article class="product dday.*?>(.*?)<\/article/is', $html['content'], $matches);
+
+$link = "https://www.digitec.ch";
 $title = date('d-m-Y');
 $description = $matches[1];
 
-preg_match('/url\((.*?)\)/', $description, $imgs);
+preg_match('/ src="(.*?)"/', $description, $imgs);
 $description = preg_replace( '/href="(.*?)"/', 'href="' . $link . '${1}"', $description);
 $description = '<img src="'.$link. $imgs[1] .'" />' . $description;
 $description = preg_replace('/<div class="stock">.*?<\/div>/s', '', $description);
 
-preg_match('/class="overlay".*?href="(.*?)"/s', $description, $links);
+preg_match('/class="product-overlay".*?href="(.*?)"/s', $description, $links);
 $link = $links[1];
-$description = preg_replace('/class="overlay"(.*?)></s', 'class="overlay"${1}>Page produit<', $description);
+$description = preg_replace('/class="product-overlay"(.*?)></s', 'class="overlay"${1}>Page produit<', $description);
 preg_match( '/<div.*?class="date.*?(\d+)<\//is', $description, $date_match);
 
 $date =  date('D, d M Y H:i:s O', mktime(6, 0, 0));
 $id =  $title;
-
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 ?>
@@ -41,9 +42,3 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>';
 <?php endif;?>
 </channel>
 </rss>
-
-
-
-
-
-
