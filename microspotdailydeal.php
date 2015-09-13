@@ -22,7 +22,7 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>';
 $i=0;
 while( $i < count($matches[0])) {
   preg_match( '/href="(.*?)".*?src="(.*?)"/s', $matches[1][$i], $match);
-  $id = str_replace('/', '', $match[2]);
+  $id = str_replace('/', '', $match[1]);
   $title = 'Deal';
   $link = $base . $match[1];
   $description = '<div><a href="' . $base . $match[1] . '"><img src="' . $base . $match[2] . '"/></a></div>';

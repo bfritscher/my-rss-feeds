@@ -12,6 +12,7 @@ preg_match('/ src="(.*?)"/', $description, $imgs);
 $description = preg_replace( '/href="(.*?)"/', 'href="' . $link . '${1}"', $description);
 $description = '<img src="'.$link. $imgs[1] .'" />' . $description;
 $description = preg_replace('/<div class="stock">.*?<\/div>/s', '', $description);
+$description = preg_replace('/<noscript>.*?<\/noscript>/s', '', $description);
 
 preg_match('/class="product-overlay".*?href="(.*?)"/s', $description, $links);
 $link = $links[1];
