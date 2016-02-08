@@ -1,7 +1,11 @@
 <?php
-$html =  file_get_contents('http://www.steg-electronics.ch/fr/Default.aspx');
-preg_match_all( "/<div.*?url\((.*?)\).*Weekly-Deals','Klick','(.*?)'.*?href=\"(.*?)\"/i", $html, $matches);
+require('core.php');
+$html =  get_web_page_content('http://www.steg-electronics.ch/fr/Default.aspx');
+preg_match( '/weeklydeal">(.*)<div class="box">/s', $html, $matches);
+preg_match_all( '/href="(.*?)".*?src="(.*?)"/s', $matches[1], $matches);
 
+$base = "http://www.steg-electronics.ch";
+$date =  date('D, d M Y H:i:s O', mktime(6, 0, 0));
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 ?>
 
@@ -15,10 +19,10 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>';
 <?php 
 $i=0;
 while( $i < count($matches[0])) {
-  $id = $matches[2][$i];
-  $title = str_replace('-', ' ', $id);
-  $link = $matches[3][$i];
-  $description = '<div><a href="' . $matches[3][$i] . '"><img src="' . $matches[1][$i] . '"/></a></div>';
+  $id = str_replace('/', '', $matches[2][$i]);
+  $title = 'Weeklydeal';
+  $link = $base . $matches[1][$i];
+  $description = '<div><a href="' . $base . $matches[1][$i] . '"><img src="' . $base . $matches[2][$i] . '"/></a></div>';
   $date =  date('D, d M Y H:i:s O', mktime(6, 0, 0));
   $i++;
 ?>

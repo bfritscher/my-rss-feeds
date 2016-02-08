@@ -11,8 +11,8 @@ function GetFromHost($host, $path) {
 }
 $months = array(1=>"January",2=>"February",3=>"March",4=>"April",5=>"May",6=>"June",7=>"July",8=>"August",9=>"September",10=>"October",11=>"November",12=>"December");
  
-$response = GetFromHost("dilbert.com","/strips");
-preg_match_all('#strips/comic/(?<y>\d+)-(?<m>\d+)-(?<d>\d+)/" title="Dilbert\.com"><img src="(?<img>http://dilbert\.com/dyn/str_strip/\d+/\d+/\d+/\d+/\d+/\d+/\d+/\d+/\d+\.strip[\.[\w]*]?\.gif)#', $response, $strips);
+$response = GetFromHost("dilbert.com","/");
+preg_match_all('/img-comic-link".*?(?<y>\d+)-(?<m>\d+)-(?<d>\d+).*?src="(?<img>.*?)"/s', $response, $strips);
  
 echo '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"><channel><title>Dilbert Daily Strip</title><link>http://dilbert.com</link>
