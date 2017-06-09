@@ -7,7 +7,8 @@ preg_match( '/<article class=".*?daily-offer.*?>(.*?)<\/article/is', $html, $mat
 $link = "https://www.galaxus.ch";
 $title = date('d-m-Y');
 $description = $matches[1];
-preg_match('/ src="(.*?)"/', $description, $imgs);
+$description = preg_replace('/<ul class="product-recommender.*<\/ul>/s', '', $description);
+preg_match('/ data-src="(.*?)"/', $description, $imgs);
 $description = preg_replace('/^.*?<\/noscript>/s', '', $description);
 $description = preg_replace( '/href="(.*?)"/', 'href="' . $link . '${1}"', $description);
 $description = '<img src="'. $imgs[1] .'" />' . $description;
