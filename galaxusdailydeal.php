@@ -2,9 +2,10 @@
 require('core.php');
 
 $html =  get_web_page_content('https://www.galaxus.ch/fr/LiveShopping');
-preg_match( '/.*?daily-offer.*?>(.*?)<\/article/is', $html, $matches);
 
-$link = "https://www.galaxus.ch";
+preg_match( '/article class="daily-offer.*?>([\w\W]*?)<\/article>/is', $html, $matches);
+
+$link = "https://www.digitec.ch";
 $title = date('d-m-Y');
 $description = $matches[1];
 
@@ -12,10 +13,12 @@ preg_match('/ data-src="(.*?)"/', $description, $imgs);
 $description = preg_replace( '/href="(.*?)"/', 'href="' . $link . '${1}"', $description);
 
 
-preg_match('/class="overlay.*?href="(.*?)"/s', $description, $links);
-$link = $links[1];
-preg_match( '/<div.*?class="daily-offer-new-date__day.*?(\d+)<\//is', $description, $date_match);
-preg_match('/(<div class="product-content">.*)<div class="product-buttons">/is', $description, $match);
+preg_match('/class="rating.*?href="(.*?\/)ratings\/(.*?)#/s', $description, $links);
+$link = $links[1] . $links[2];
+
+preg_match('/<div.*?class="daily-offer-new-date__day.*?(\d+)<\//is', $description, $date_match);
+preg_match('/<div class="product-price">(.*)<div class="product-marketingtext/is', $description, $match);
+
 $description = '<img src="'. $imgs[1] .'" />' . $match[1];
 
 
@@ -31,7 +34,6 @@ $id =  $title;
         <link>http://galaxus.ch</link>
         <lastBuildDate><?php echo $date;?></lastBuildDate>
         <pubDate><?php echo $date;?></pubDate>
-<?php if ($date_match[1] == date('d')): ?>
         <item>
                 <title><?php echo $title;?></title>
                 <description><![CDATA[
@@ -42,6 +44,11 @@ $id =  $title;
                 <guid><?php echo $id;?></guid>
                 <pubDate><?php echo $date;?></pubDate>
         </item>
-<?php endif;?>
 </channel>
 </rss>
+
+
+
+
+
+
