@@ -1,50 +1,49 @@
 <?php
 require('core.php');
-
-function main(){
-	$feed = get_web_page_content('http://www.rts.ch/info/toute-info/?format=rss/news');
-	//extract header and footer
-	preg_match_all('/(.*?)<item>.*<\/item>(.*)$/ms', $feed, $match);
-	//extract items
-	preg_match_all('/<item>.*?<\/item>/ms', $feed, $matches);
-	$header = $match[1][0]; //header
-	$header = preg_replace('/<type>.*?<\/type>/ms', "", $header);
-	$header = preg_replace('/<managingEditor>.*?<\/managingEditor>/ms', "", $header);
-	$header = preg_replace('/<webMaster>.*?<\/webMaster>/ms', "", $header);
-	
-	echo $header;
-	foreach( $matches[0] as $item ){
-		//extract link url
-		preg_match('/<link>(.*)<\/link>/ms', $item, $link);
-		//could extract category from link
-		//$description = get_content_from_link($link[1]);
-		//replace description
-		//echo preg_replace('/<!\[CDATA\[.*?\]\]>/ms', "<![CDATA[ " . $description . " ]]>", $item);
-    preg_match('/<description>.*?]]>(.*?)<\/description>/ms', $item , $dmatch);
-	$item = preg_replace('/<description>.*?<\/description>/ms', "", $item);
-	$item = preg_replace('/<author>.*?<\/author>/ms', "", $item);
-	$item = preg_replace('/<fullText><!\[CDATA\[(.*?)\]\]><\/fullText>(.*?)<image size="big">(.*?)<\/image>/ms', '<description><![CDATA[<img src="$3">]]>&lt;b&gt;' . $dmatch[1] . '&lt;/b&gt;<![CDATA[$1]]></description>$2<image size="big">$3</image>', $item);
-    $item = preg_replace('/href="\//m', 'href="http://www.rts.ch/', $item);
-    $item = preg_replace('/src="\//m', 'src="http://www.rts.ch/', $item);  
-    
-		echo $item;
-	}
-	echo $match[2][0]; //footer
-}
-
-function get_content_from_link($link){
-	$content = "";
-	//TODO: caching
-	$html = get_web_page_content($link);
-	preg_match('/media small">.*?(<img.*?\/>)/ms', $html, $img);
-	$content .=  "<p>" . $img[1] ."</p>";
-	preg_match('/intro">(.*?)<\/div/ms', $html, $intro);
-	$content .= "<b>" . $intro[1] . "</b>";
-	preg_match('/tsr-gallery">(.*?)<\/div/ms', $html, $article);
-	$content .= $article[1];
-	$content = preg_replace('/src="\//m', 'src="http://www.rts.ch/', $content);
-	$content = preg_replace('/href="\//m', 'href="http://www.rts.ch/', $content);
-	return $content;
-}
-main();
+$json = get_web_page_content('https://hummingbird.rts.ch/api/info/v4/feed/inbrief?limit=50&offset=0');
+$res = json_decode($json);
+$date =  date('D, d M Y H:i:s O', mktime(6, 0, 0));
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
+
+<rss version="2.0">
+<channel>
+        <title>Toute l'info - RTS Un / RTS Deux</title>
+        <description>RTSinfo.ch - le portail d'info de rts.ch - Pour un usage privé exclusivement.</description>
+        <link>https://www.rts.ch/info/toute-info/</link>
+        <lastBuildDate><?php echo $date;?></lastBuildDate>
+        <pubDate><?php echo $date;?></pubDate>
+        <image>
+            <url>https://www.rts.ch/img/general/header/rts.ch-logo.gif</url>
+            <title>Toute l'info - RTS Un / RTS Deux</title>
+            <link>https://www.rts.ch/info/toute-info/</link>
+        </image>
+<?php
+foreach ($res->elements as $item){
+    $url = "https://hummingbird.rts.ch/api/info/v4/articles/{$item->id}?native=android-4250";
+    $json = get_web_page_content($url);
+    $a = json_decode($json);
+    $date =  date('D, d M Y H:i:s O', $a->dateTime/1000);
+    preg_match( '/(<article.*?>.*<\/article>)/is', $a->html, $matches);
+    $replace = "<img src=\"{$a->mainImage->imageUrl}?w=580\" />";
+    if ($a->mainMedia and $a->mainMedia->type == "video") {
+        $replace = '<iframe referrerpolicy="no-referrer-when-downgrade" allowfullscreen="" allow="geolocation *; encrypted-media" height="360" width="100%" frameborder="0" src="//player.rts.ch/p/rts/inline?urn=' . $a->mainMedia->mediaUrn . '&amp;hidesegments=true" srg-player-id="b38f120b-2f04-4882-9ba0-9e0313c72fcf"></iframe>';
+    }
+    
+    
+    $description = preg_replace( '/<div class="article-media-caption.*?<\/header>/',  $replace, $matches[1]);
+    $description = preg_replace( '/<div class="article-lead">(.*?)<\/div>/is', '<div><b>${1}</b></div>', $description);
+?>
+        <item>
+                <title><?php echo $a->title;?></title>
+                <description><![CDATA[
+<?php echo $description; ?>
+  ]]> 
+</description>
+                <link><?php echo $a->url;?></link>
+                <guid isPermaLink="false"><?php echo $a->id;?></guid>
+                <pubDate><?php echo $date;?></pubDate>
+        </item>
+<?php } ?>
+</channel>
+</rss>

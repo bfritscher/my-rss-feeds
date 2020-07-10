@@ -3,7 +3,7 @@ require('core.php');
 
 $html =  get_web_page_content('https://www.galaxus.ch/fr/LiveShopping');
 
-preg_match( '/class="liveShoppingBigWrapper"><article.*?>([\w\W]*?)<\/article>/is', $html, $matches);
+preg_match( '/<article.*?class="liveshoppingbig.*?>([\w\W]*?)<\/article>/is', $html, $matches);
 
 $link = "https://www.galaxus.ch";
 $title = date('d-m-Y');
@@ -13,7 +13,7 @@ preg_match('/<a href="(\/fr\/[a-z\d]+\/product\/)ratings\/(.*?)#/s', $descriptio
 $link = $link . $links[1] . $links[2];
 
 $description = preg_replace( '/href="(.*?)"/', 'href="' . $link . '${1}"', $description);
-preg_match('/img src="(.*?)"/', $description, $imgs);
+preg_match('/img src="(http.*?)"/', $description, $imgs);
 
 
 preg_match('/<div.*?class="daily-offer-new-date__day.*?(\d+)<\//is', $description, $date_match);
